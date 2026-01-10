@@ -2,95 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* NSA-X Deep Space Theme */
+    --background: 210 30% 4%;
+    --foreground: 210 20% 90%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 210 25% 8%;
+    --card-foreground: 210 20% 90%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 210 25% 10%;
+    --popover-foreground: 210 20% 90%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 200 80% 55%;
+    --primary-foreground: 210 30% 4%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 210 20% 14%;
+    --secondary-foreground: 210 20% 80%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 210 20% 12%;
+    --muted-foreground: 210 15% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 210 25% 16%;
+    --accent-foreground: 210 20% 90%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 210 20% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 210 20% 16%;
+    --input: 210 20% 16%;
+    --ring: 200 80% 55%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Custom NSA-X Colors */
+    --info: 210 70% 55%;
+    --info-foreground: 210 30% 98%;
+    --caution: 38 85% 55%;
+    --caution-foreground: 38 90% 10%;
+    --success: 160 50% 35%;
+    --success-foreground: 160 50% 98%;
+    --inactive: 215 15% 45%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    /* Gradients */
+    --gradient-glow: linear-gradient(135deg, hsl(200 80% 55% / 0.2), hsl(200 80% 55% / 0.05));
+    --gradient-surface: linear-gradient(180deg, hsl(210 25% 10%), hsl(210 25% 8%));
+    --gradient-hero: linear-gradient(135deg, hsl(210 30% 6%), hsl(210 25% 4%));
 
-    --sidebar-primary: 240 5.9% 10%;
+    /* Shadows */
+    --shadow-glow: 0 0 40px hsl(200 80% 55% / 0.15);
+    --shadow-card: 0 4px 24px hsl(0 0% 0% / 0.4);
+    --shadow-elevated: 0 8px 32px hsl(0 0% 0% / 0.5);
 
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar */
+    --sidebar-background: 210 25% 6%;
+    --sidebar-foreground: 210 20% 70%;
+    --sidebar-primary: 200 80% 55%;
+    --sidebar-primary-foreground: 210 30% 4%;
+    --sidebar-accent: 210 25% 12%;
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 210 20% 14%;
+    --sidebar-ring: 200 80% 55%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 210 30% 4%;
+    --foreground: 210 20% 90%;
   }
 }
 
@@ -100,6 +79,116 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
   }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  /* Card Variants */
+  .card-surface {
+    @apply bg-card border border-border rounded-lg;
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-elevated {
+    @apply bg-card border border-border rounded-lg;
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .card-glow {
+    @apply bg-card border border-primary/30 rounded-lg;
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Status Indicators */
+  .status-active {
+    @apply bg-success text-success-foreground;
+  }
+
+  .status-caution {
+    @apply bg-caution text-caution-foreground;
+  }
+
+  .status-info {
+    @apply bg-info text-info-foreground;
+  }
+
+  /* Data Display */
+  .metric-value {
+    @apply text-3xl font-semibold tracking-tight text-foreground;
+  }
+
+  .metric-label {
+    @apply text-xs font-medium uppercase tracking-wider text-muted-foreground;
+  }
+
+  /* Interactive Elements */
+  .interactive-surface {
+    @apply transition-all duration-200 hover:bg-accent hover:border-primary/20;
+  }
+
+  /* Explanation Tree */
+  .explanation-node {
+    @apply relative pl-6 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-px before:bg-border;
+  }
+
+  .explanation-node::after {
+    content: '';
+    @apply absolute left-0 top-3 w-4 h-px bg-border;
+  }
+
+  /* Pulse Animation for Active States */
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px hsl(200 80% 55% / 0.2);
+    }
+    50% {
+      box-shadow: 0 0 30px hsl(200 80% 55% / 0.4);
+    }
+  }
+
+  /* Flow Animation */
+  .flow-line {
+    stroke-dasharray: 8 4;
+    animation: flow 1.5s linear infinite;
+  }
+
+  @keyframes flow {
+    to {
+      stroke-dashoffset: -12;
+    }
+  }
+
+  /* Fade In Animation */
+  .fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Stagger delays */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
 }
