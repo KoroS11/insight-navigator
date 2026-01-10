@@ -1,50 +1,72 @@
-import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface ConfidenceIndicatorProps {
-  level: "low" | "moderate" | "high";
-  reasoning: string;
+  score: number;
+  breakdown: {
+    label: string;
+    score: number;
+    isWarning?: boolean;
+  }[];
+  responseTime: string;
 }
 
-export function ConfidenceIndicator({ level, reasoning }: ConfidenceIndicatorProps) {
-  const levelValues = {
-    low: 25,
-    moderate: 55,
-    high: 85,
+export function ConfidenceIndicator({ score, breakdown, responseTime }: ConfidenceIndicatorProps) {
+  const getScoreLevel = (s: number) => {
+    if (s >= 70) return { label: "HIGH", color: "text-caution" };
+    if (s >= 40) return { label: "MODERATE", color: "text-info" };
+    return { label: "LOW", color: "text-muted-foreground" };
   };
 
-  const levelColors = {
-    low: "bg-destructive",
-    moderate: "bg-caution",
-    high: "bg-success",
-  };
+  const level = getScoreLevel(score);
 
   return (
-    <div className="card-surface p-5">
-      <div className="text-center mb-4">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">
-          System Confidence
-        </h3>
-        <p className="text-xl font-semibold text-foreground uppercase">
-          {level}
-        </p>
+    <div className="card-surface p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-semibold">Threat Likelihood</h3>
+        <span className={cn("text-xs font-semibold", level.color)}>
+          {level.label}
+        </span>
       </div>
 
-      <div className="relative h-3 bg-muted rounded-full overflow-hidden mb-4">
-        <motion.div
-          className={`absolute inset-y-0 left-0 ${levelColors[level]} rounded-full`}
-          initial={{ width: 0 }}
-          animate={{ width: `${levelValues[level]}%` }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        />
-        <div className="absolute inset-0 flex justify-between px-1 items-center">
-          <span className="text-[10px] text-muted-foreground">Low</span>
-          <span className="text-[10px] text-muted-foreground">High</span>
+      {/* Main Score */}
+      <div className="mb-4">
+        <div className="flex items-baseline gap-1 mb-2">
+          <span className="text-3xl font-semibold">{score}</span>
+          <span className="text-muted-foreground text-sm">/100</span>
+        </div>
+        <div className="h-2 bg-muted rounded-full overflow-hidden">
+          <div 
+            className={cn(
+              "h-full rounded-full transition-all",
+              score >= 70 ? "bg-caution" : score >= 40 ? "bg-info" : "bg-muted-foreground"
+            )}
+            style={{ width: `${score}%` }}
+          />
         </div>
       </div>
 
-      <p className="text-xs text-muted-foreground text-center">
-        {reasoning}
-      </p>
+      {/* Breakdown */}
+      <div className="space-y-2 pt-3 border-t border-border">
+        {breakdown.map((item, i) => (
+          <div key={i} className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">{item.label}</span>
+            <span className={cn(
+              "font-mono",
+              item.isWarning ? "text-caution" : "text-foreground"
+            )}>
+              {item.score}/100 {item.isWarning && "⚠"}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Response Time */}
+      <div className="mt-4 pt-3 border-t border-border">
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">Recommended response</span>
+          <span className="text-caution font-medium">{responseTime}</span>
+        </div>
+      </div>
     </div>
   );
 }

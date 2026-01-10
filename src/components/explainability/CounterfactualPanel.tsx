@@ -1,73 +1,88 @@
-import { HelpCircle, ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Counterfactual {
   id: string;
-  question: string;
+  condition: string;
   outcome: string;
-  impact: "reduced" | "unchanged" | "eliminated";
+  impact: "eliminated" | "reduced" | "unchanged";
 }
 
 const counterfactuals: Counterfactual[] = [
   {
     id: "cf-1",
-    question: "If this occurred during business hours?",
-    outcome: "Flagged as 'Low Priority' (Policy #12 wouldn't trigger)",
+    condition: "Access during business hours (09:00-17:00)",
+    outcome: "Policy #12 would not trigger, severity reduced to Low",
     impact: "reduced",
   },
   {
     id: "cf-2",
-    question: "If only 1 failed attempt occurred?",
-    outcome: "Would not trigger alert (below threshold)",
+    condition: "Single failed login attempt (instead of 3)",
+    outcome: "Alert would not be generated (below threshold)",
     impact: "eliminated",
   },
   {
     id: "cf-3",
-    question: "If from known IP range?",
-    outcome: "Geographic rule wouldn't apply",
+    condition: "Connection to known corporate IP range",
+    outcome: "Geographic anomaly rule would not apply",
+    impact: "reduced",
+  },
+  {
+    id: "cf-4",
+    condition: "Regular user account (not service account)",
+    outcome: "Different policy set applied, time restriction removed",
     impact: "reduced",
   },
 ];
 
 const impactStyles = {
-  reduced: "border-caution/30 bg-caution/5",
-  unchanged: "border-border bg-card",
-  eliminated: "border-success/30 bg-success/5",
+  eliminated: "border-l-success",
+  reduced: "border-l-caution",
+  unchanged: "border-l-muted-foreground",
+};
+
+const impactLabels = {
+  eliminated: "No alert",
+  reduced: "Lower severity",
+  unchanged: "No change",
 };
 
 export function CounterfactualPanel() {
   return (
-    <div className="card-surface p-4">
-      <h3 className="text-heading text-foreground mb-4 flex items-center gap-2">
-        <HelpCircle className="w-5 h-5 text-info" />
-        "What if..." Scenarios
-      </h3>
-      <p className="text-xs text-muted-foreground mb-4">
-        Explore how different conditions would affect the detection outcome
-      </p>
+    <div className="card-surface">
+      <div className="p-4 border-b border-border">
+        <h3 className="text-sm font-semibold">Counterfactual Analysis</h3>
+        <p className="text-xs text-muted-foreground mt-1">
+          How would the outcome change under different conditions?
+        </p>
+      </div>
 
-      <div className="space-y-3">
-        {counterfactuals.map((cf, i) => (
-          <motion.div
+      <div className="p-4 space-y-3">
+        {counterfactuals.map((cf) => (
+          <div
             key={cf.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className={`p-4 rounded-lg border ${impactStyles[cf.impact]}`}
+            className={cn(
+              "p-3 border-l-2 bg-accent/20 rounded-r text-xs",
+              impactStyles[cf.impact]
+            )}
           >
-            <div className="flex items-start gap-2 mb-2">
-              <span className="text-info">❓</span>
-              <span className="text-sm font-medium text-foreground">
-                {cf.question}
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-muted-foreground">If:</span>
+              <span className={cn(
+                "px-1.5 py-0.5 rounded text-xs",
+                cf.impact === "eliminated" ? "bg-success/10 text-success" : 
+                cf.impact === "reduced" ? "bg-caution/10 text-caution" : 
+                "bg-muted text-muted-foreground"
+              )}>
+                {impactLabels[cf.impact]}
               </span>
             </div>
-            <div className="flex items-start gap-2 pl-6">
-              <ArrowRight className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-              <span className="text-sm text-muted-foreground">
-                {cf.outcome}
-              </span>
+            <p className="text-foreground mb-2">{cf.condition}</p>
+            <div className="flex items-start gap-1.5 text-muted-foreground">
+              <ArrowRight className="w-3 h-3 mt-0.5 flex-shrink-0" />
+              <span>{cf.outcome}</span>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>

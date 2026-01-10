@@ -1,11 +1,12 @@
 import { 
-  LayoutDashboard, 
+  LayoutGrid, 
   Network, 
-  Brain, 
-  UserCheck, 
-  Shield, 
+  FileSearch, 
+  ClipboardCheck, 
+  Lock, 
   ChevronLeft,
-  Activity
+  Settings,
+  FileText
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -13,11 +14,16 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { title: "Overview", url: "/", icon: LayoutDashboard },
-  { title: "Architecture", url: "/architecture", icon: Network },
-  { title: "Explainability", url: "/explainability", icon: Brain },
-  { title: "Decisions", url: "/decisions", icon: UserCheck },
-  { title: "Governance", url: "/governance", icon: Shield },
+  { title: "Overview", url: "/", icon: LayoutGrid, badge: null },
+  { title: "Active Events", url: "/explainability", icon: FileSearch, badge: 3 },
+  { title: "Architecture", url: "/architecture", icon: Network, badge: null },
+  { title: "Decisions", url: "/decisions", icon: ClipboardCheck, badge: 1 },
+  { title: "Governance", url: "/governance", icon: Lock, badge: null },
+];
+
+const secondaryItems = [
+  { title: "Settings", url: "#", icon: Settings },
+  { title: "Documentation", url: "#", icon: FileText },
 ];
 
 export function AppSidebar() {
@@ -27,25 +33,22 @@ export function AppSidebar() {
   return (
     <aside 
       className={cn(
-        "flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300",
-        collapsed ? "w-16" : "w-64"
+        "flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-200",
+        collapsed ? "w-14" : "w-52"
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 h-16 border-b border-sidebar-border">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary">
-          <Activity className="w-5 h-5" />
+      <div className="flex items-center gap-2 px-3 h-12 border-b border-sidebar-border">
+        <div className="flex items-center justify-center w-7 h-7 rounded bg-primary/10 text-primary">
+          <Network className="w-4 h-4" />
         </div>
         {!collapsed && (
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-foreground">NSA-X</span>
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Neuro-Symbolic AI</span>
-          </div>
+          <span className="text-sm font-semibold text-foreground tracking-tight">NSA-X</span>
         )}
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 py-4 px-2 space-y-1">
+      {/* Primary Navigation */}
+      <nav className="flex-1 py-3 px-2 space-y-0.5">
         {navItems.map((item) => {
           const isActive = location.pathname === item.url;
           return (
@@ -53,34 +56,44 @@ export function AppSidebar() {
               key={item.title}
               to={item.url}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200",
+                "flex items-center gap-2.5 px-2.5 py-2 rounded text-sm transition-colors duration-150",
                 isActive 
-                  ? "bg-sidebar-accent text-primary" 
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  ? "bg-sidebar-accent text-foreground" 
+                  : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-foreground"
               )}
             >
-              <item.icon className={cn("w-5 h-5 flex-shrink-0", isActive && "text-primary")} />
-              {!collapsed && <span>{item.title}</span>}
-              {isActive && !collapsed && (
-                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />
+              <item.icon className="w-4 h-4 flex-shrink-0" />
+              {!collapsed && (
+                <>
+                  <span className="flex-1">{item.title}</span>
+                  {item.badge && (
+                    <span className="px-1.5 py-0.5 text-xs bg-caution/20 text-caution rounded">
+                      {item.badge}
+                    </span>
+                  )}
+                </>
               )}
             </NavLink>
           );
         })}
       </nav>
 
-      {/* System Status */}
-      {!collapsed && (
-        <div className="mx-3 mb-4 p-3 rounded-lg bg-card border border-border">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-2 h-2 rounded-full bg-success animate-pulse-subtle" />
-            <span className="text-xs font-medium text-foreground">System Active</span>
-          </div>
-          <p className="text-[10px] text-muted-foreground">
-            Conceptual Demo Mode
-          </p>
-        </div>
-      )}
+      {/* Divider */}
+      <div className="mx-3 border-t border-sidebar-border" />
+
+      {/* Secondary Navigation */}
+      <nav className="py-3 px-2 space-y-0.5">
+        {secondaryItems.map((item) => (
+          <a
+            key={item.title}
+            href={item.url}
+            className="flex items-center gap-2.5 px-2.5 py-2 rounded text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-foreground transition-colors duration-150"
+          >
+            <item.icon className="w-4 h-4 flex-shrink-0" />
+            {!collapsed && <span>{item.title}</span>}
+          </a>
+        ))}
+      </nav>
 
       {/* Collapse Toggle */}
       <div className="border-t border-sidebar-border p-2">
@@ -88,7 +101,7 @@ export function AppSidebar() {
           variant="ghost"
           size="sm"
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full justify-center"
+          className="w-full h-8 justify-center text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft className={cn(
             "w-4 h-4 transition-transform duration-200",
