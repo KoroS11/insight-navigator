@@ -1,11 +1,14 @@
-import { motion } from "framer-motion";
-
 const layers = [
-  { id: "input", label: "Data Input", x: 80, y: 60, description: "Network telemetry, logs, events" },
-  { id: "neural", label: "Neural Detection", x: 280, y: 60, description: "Pattern recognition layer" },
-  { id: "symbolic", label: "Symbolic Reasoning", x: 480, y: 60, description: "Rule-based analysis" },
-  { id: "explain", label: "Explanation Engine", x: 380, y: 180, description: "Human-readable output" },
-  { id: "human", label: "Human Analyst", x: 380, y: 300, description: "Final authority" },
+  { id: "input", label: "Data Ingestion", x: 60, y: 50, 
+    stats: "Syslog, SNMP, CEF | ~4.2K events/min" },
+  { id: "neural", label: "Anomaly Detection", x: 240, y: 50, 
+    stats: "512-dim embeddings | <200ms" },
+  { id: "symbolic", label: "Rule Engine", x: 420, y: 50, 
+    stats: "847 active rules | <50ms" },
+  { id: "explain", label: "Explanation", x: 330, y: 150, 
+    stats: "4.2 avg depth | <100ms" },
+  { id: "human", label: "Analyst Queue", x: 330, y: 250, 
+    stats: "3 pending | 2 active" },
 ];
 
 const connections = [
@@ -23,12 +26,12 @@ export function ArchitectureFlow() {
   };
 
   return (
-    <div className="relative w-full h-[400px] card-surface rounded-xl overflow-hidden">
-      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 600 400">
-        {/* Grid Pattern */}
+    <div className="relative w-full h-[320px] card-surface overflow-hidden">
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 540 320">
+        {/* Subtle Grid */}
         <defs>
-          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="hsl(210 20% 16%)" strokeWidth="0.5" />
+          <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="hsl(220 14% 12%)" strokeWidth="0.5" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill="url(#grid)" />
@@ -38,85 +41,62 @@ export function ArchitectureFlow() {
           const from = getLayerPos(conn.from);
           const to = getLayerPos(conn.to);
           return (
-            <motion.line
+            <line
               key={i}
               x1={from.x + 60}
-              y1={from.y + 25}
+              y1={from.y + 22}
               x2={to.x + 60}
-              y2={to.y + 25}
-              stroke="hsl(200 80% 55%)"
-              strokeWidth="2"
+              y2={to.y + 22}
+              stroke="hsl(199 70% 50%)"
+              strokeWidth="1"
               strokeOpacity="0.3"
               className="flow-line"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 1, delay: i * 0.2 }}
             />
           );
         })}
 
         {/* Nodes */}
-        {layers.map((layer, i) => (
-          <motion.g
-            key={layer.id}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: i * 0.1 }}
-          >
+        {layers.map((layer) => (
+          <g key={layer.id}>
             <rect
               x={layer.x}
               y={layer.y}
               width="120"
-              height="50"
-              rx="8"
-              fill="hsl(210 25% 10%)"
-              stroke="hsl(200 80% 55%)"
+              height="44"
+              rx="2"
+              fill="hsl(220 16% 11%)"
+              stroke="hsl(220 14% 18%)"
               strokeWidth="1"
-              strokeOpacity="0.5"
             />
             <text
               x={layer.x + 60}
-              y={layer.y + 22}
+              y={layer.y + 18}
               textAnchor="middle"
-              fill="hsl(210 20% 90%)"
+              fill="hsl(220 10% 88%)"
               fontSize="11"
-              fontWeight="500"
+              fontWeight="600"
             >
               {layer.label}
             </text>
             <text
               x={layer.x + 60}
-              y={layer.y + 38}
+              y={layer.y + 32}
               textAnchor="middle"
-              fill="hsl(210 15% 50%)"
+              fill="hsl(220 10% 50%)"
               fontSize="8"
+              fontFamily="JetBrains Mono, monospace"
             >
-              {layer.description.slice(0, 20)}...
+              {layer.stats.slice(0, 28)}
             </text>
-          </motion.g>
+          </g>
         ))}
-
-        {/* Active Indicator */}
-        <motion.circle
-          cx="340"
-          cy="85"
-          r="4"
-          fill="hsl(200 80% 55%)"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0.3, 1, 0.3] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
       </svg>
 
       {/* Legend */}
-      <div className="absolute bottom-4 left-4 flex items-center gap-4 text-xs text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-0.5 bg-primary/50" />
-          <span>Data Flow</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-primary animate-pulse-subtle" />
-          <span>Active Processing</span>
+      <div className="absolute bottom-3 left-4 flex items-center gap-4 text-xs text-muted-foreground">
+        <div className="flex items-center gap-1.5">
+          <div className="w-4 h-px bg-primary/50" />
+          <span>Data flow</span>
         </div>
       </div>
     </div>

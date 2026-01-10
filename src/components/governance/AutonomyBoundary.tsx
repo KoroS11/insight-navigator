@@ -1,85 +1,61 @@
-import { Check, AlertTriangle } from "lucide-react";
-import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-interface BoundaryItem {
-  label: string;
-  allowed: boolean;
+interface ControlRow {
+  action: string;
+  autonomy: "Full" | "Limited" | "None" | "Never";
+  approval: string;
 }
 
-const autonomousActions: BoundaryItem[] = [
-  { label: "Detect anomalies", allowed: true },
-  { label: "Generate explanations", allowed: true },
-  { label: "Recommend actions", allowed: true },
-  { label: "Log all decisions", allowed: true },
-  { label: "Trigger notifications", allowed: true },
+const controlMatrix: ControlRow[] = [
+  { action: "Detect anomalies", autonomy: "Full", approval: "None" },
+  { action: "Analyze patterns", autonomy: "Full", approval: "None" },
+  { action: "Generate recommendations", autonomy: "Full", approval: "None" },
+  { action: "Send alerts", autonomy: "Full", approval: "None" },
+  { action: "Log all actions", autonomy: "Full", approval: "None" },
+  { action: "Block traffic (temp)", autonomy: "None", approval: "Analyst" },
+  { action: "Isolate system", autonomy: "None", approval: "Analyst" },
+  { action: "Kill process", autonomy: "None", approval: "Lead Analyst" },
+  { action: "Modify firewall rules", autonomy: "None", approval: "Admin" },
+  { action: "Delete/quarantine files", autonomy: "Never", approval: "Admin + CISO" },
 ];
 
-const humanRequiredActions: BoundaryItem[] = [
-  { label: "Block network traffic", allowed: false },
-  { label: "Isolate systems", allowed: false },
-  { label: "Modify security policies", allowed: false },
-  { label: "Terminate processes", allowed: false },
-  { label: "Delete or quarantine files", allowed: false },
-];
+const autonomyStyles = {
+  Full: "text-success",
+  Limited: "text-caution",
+  None: "text-muted-foreground",
+  Never: "text-destructive",
+};
 
 export function AutonomyBoundary() {
   return (
-    <div className="grid md:grid-cols-2 gap-6">
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.4 }}
-        className="card-surface p-5 border-success/20"
-      >
-        <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Check className="w-5 h-5 text-success" />
-          What NSA-X Can Do Autonomously
-        </h3>
-        <ul className="space-y-3">
-          {autonomousActions.map((item, i) => (
-            <motion.li
-              key={i}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="flex items-center gap-3 text-sm"
-            >
-              <div className="w-5 h-5 rounded-full bg-success/10 flex items-center justify-center">
-                <Check className="w-3 h-3 text-success" />
-              </div>
-              <span className="text-foreground">{item.label}</span>
-            </motion.li>
+    <div className="card-surface">
+      <div className="p-4 border-b border-border">
+        <h3 className="text-sm font-semibold">Control Matrix</h3>
+        <p className="text-xs text-muted-foreground mt-1">
+          System autonomy boundaries and approval requirements
+        </p>
+      </div>
+      
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th className="w-24 text-center">Autonomy</th>
+            <th className="w-32">Approval Required</th>
+          </tr>
+        </thead>
+        <tbody>
+          {controlMatrix.map((row, i) => (
+            <tr key={i}>
+              <td>{row.action}</td>
+              <td className={cn("text-center font-medium text-xs", autonomyStyles[row.autonomy])}>
+                {row.autonomy}
+              </td>
+              <td className="text-xs text-muted-foreground">{row.approval}</td>
+            </tr>
           ))}
-        </ul>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-        className="card-surface p-5 border-caution/20"
-      >
-        <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-          <AlertTriangle className="w-5 h-5 text-caution" />
-          What Requires Human Authority
-        </h3>
-        <ul className="space-y-3">
-          {humanRequiredActions.map((item, i) => (
-            <motion.li
-              key={i}
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.05 + 0.1 }}
-              className="flex items-center gap-3 text-sm"
-            >
-              <div className="w-5 h-5 rounded-full bg-caution/10 flex items-center justify-center">
-                <AlertTriangle className="w-3 h-3 text-caution" />
-              </div>
-              <span className="text-foreground">{item.label}</span>
-            </motion.li>
-          ))}
-        </ul>
-      </motion.div>
+        </tbody>
+      </table>
     </div>
   );
 }

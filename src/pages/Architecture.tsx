@@ -1,141 +1,128 @@
-import { motion } from "framer-motion";
 import { ArchitectureFlow } from "@/components/architecture/ArchitectureFlow";
-import { Brain, Cpu, Shield, AlertCircle, Zap, Eye } from "lucide-react";
 
-interface LayerCard {
+interface LayerDetail {
   id: string;
   name: string;
-  icon: React.ReactNode;
-  function: string;
-  whyExists: string;
+  implementation: string;
+  latency: string;
+  throughput: string;
   limitation: string;
-  feedsInto: string;
 }
 
-const layers: LayerCard[] = [
+const layers: LayerDetail[] = [
   {
     id: "neural",
-    name: "Neural Detection Layer",
-    icon: <Cpu className="w-6 h-6" />,
-    function: "Pattern recognition from network telemetry",
-    whyExists: "Detects anomalies humans would miss",
-    limitation: "Cannot explain its own decisions",
-    feedsInto: "Symbolic Reasoning Layer",
+    name: "Anomaly Detection",
+    implementation: "Transformer-based (512-dim embeddings), trained on 18M labeled events",
+    latency: "< 200ms",
+    throughput: "~4.2K events/min",
+    limitation: "Cannot explain its own decisions; requires symbolic layer for interpretability",
   },
   {
     id: "symbolic",
-    name: "Symbolic Reasoning Layer",
-    icon: <Brain className="w-6 h-6" />,
-    function: "Rule-based analysis and policy matching",
-    whyExists: "Provides logical structure to detections",
-    limitation: "Requires neural input for novel patterns",
-    feedsInto: "Explanation Engine",
+    name: "Rule Engine",
+    implementation: "Prolog-style inference with 847 active rules, supports temporal reasoning",
+    latency: "< 50ms",
+    throughput: "~12K evaluations/min",
+    limitation: "Requires neural layer for novel pattern detection",
   },
   {
     id: "explain",
     name: "Explanation Engine",
-    icon: <Eye className="w-6 h-6" />,
-    function: "Generates human-readable reasoning chains",
-    whyExists: "Enables audit and trust verification",
-    limitation: "Explanation depth limited by symbolic coverage",
-    feedsInto: "Human Analyst Interface",
+    implementation: "Causal chain reconstruction with counterfactual generation",
+    latency: "< 100ms",
+    throughput: "~6K explanations/min",
+    limitation: "Explanation depth limited by symbolic rule coverage",
   },
   {
     id: "response",
     name: "Response Orchestrator",
-    icon: <Zap className="w-6 h-6" />,
-    function: "Coordinates recommended actions",
-    whyExists: "Standardizes response workflows",
-    limitation: "Cannot execute without human approval",
-    feedsInto: "Action Execution Layer",
+    implementation: "Workflow engine with playbook integration, SOAR compatible",
+    latency: "< 20ms",
+    throughput: "~8K recommendations/min",
+    limitation: "Cannot execute without human approval for blocking actions",
   },
 ];
 
 export default function Architecture() {
   return (
-    <div className="min-h-screen p-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
-      >
-        <h1 className="text-display text-foreground mb-2">System Architecture</h1>
-        <p className="text-muted-foreground">
-          Interactive visualization of the neuro-symbolic processing pipeline
+    <div className="p-6">
+      <div className="mb-6">
+        <h1 className="mb-1">System Architecture</h1>
+        <p className="text-muted-foreground text-sm">
+          Neuro-symbolic processing pipeline with real-time telemetry
         </p>
-      </motion.div>
+      </div>
 
-      {/* Interactive Architecture Map */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="mb-12"
-      >
+      {/* Architecture Diagram */}
+      <div className="mb-8">
         <ArchitectureFlow />
-      </motion.div>
+      </div>
 
-      {/* Layer Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        <h2 className="text-heading text-foreground mb-6">Layer Details</h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          {layers.map((layer, i) => (
-            <motion.div
-              key={layer.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + i * 0.1 }}
-              className="card-surface p-6 hover:border-primary/20 transition-colors"
-            >
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-lg bg-primary/10 text-primary">
-                  {layer.icon}
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-foreground mb-3">
-                    {layer.name}
-                  </h3>
-                  
-                  <div className="space-y-3 text-sm">
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                        Function
-                      </p>
-                      <p className="text-foreground">{layer.function}</p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
-                        Why It Exists
-                      </p>
-                      <p className="text-foreground">{layer.whyExists}</p>
-                    </div>
-                    
-                    <div className="p-3 rounded-lg bg-caution/5 border border-caution/20">
-                      <div className="flex items-center gap-2 mb-1">
-                        <AlertCircle className="w-4 h-4 text-caution" />
-                        <p className="text-xs text-caution uppercase tracking-wider">
-                          Limitation
-                        </p>
-                      </div>
-                      <p className="text-foreground text-sm">{layer.limitation}</p>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <span className="text-xs">Feeds into:</span>
-                      <span className="text-xs text-primary">{layer.feedsInto}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+      {/* Layer Details Table */}
+      <div className="card-surface">
+        <div className="p-4 border-b border-border">
+          <h2 className="text-sm font-semibold">Layer Specifications</h2>
         </div>
-      </motion.div>
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th className="w-40">Layer</th>
+              <th>Implementation</th>
+              <th className="w-24">Latency</th>
+              <th className="w-32">Throughput</th>
+              <th>Limitation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {layers.map((layer) => (
+              <tr key={layer.id}>
+                <td className="font-semibold text-foreground">{layer.name}</td>
+                <td className="text-xs text-muted-foreground">{layer.implementation}</td>
+                <td className="font-mono text-xs">{layer.latency}</td>
+                <td className="font-mono text-xs">{layer.throughput}</td>
+                <td className="text-xs text-caution">{layer.limitation}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Protocol Support */}
+      <div className="grid grid-cols-3 gap-4 mt-6">
+        <div className="card-surface p-4">
+          <h3 className="text-xs font-semibold mb-3">Input Protocols</h3>
+          <div className="space-y-1 text-xs text-muted-foreground font-mono">
+            <p>Syslog (RFC 5424)</p>
+            <p>SNMP v2c/v3</p>
+            <p>CEF (Common Event Format)</p>
+            <p>LEEF (Log Event Extended Format)</p>
+            <p>NetFlow v9 / IPFIX</p>
+          </div>
+        </div>
+
+        <div className="card-surface p-4">
+          <h3 className="text-xs font-semibold mb-3">Detection Capabilities</h3>
+          <div className="space-y-1 text-xs text-muted-foreground">
+            <p>Lateral movement detection</p>
+            <p>Privilege escalation patterns</p>
+            <p>Data exfiltration indicators</p>
+            <p>C2 beacon identification</p>
+            <p>Credential abuse detection</p>
+          </div>
+        </div>
+
+        <div className="card-surface p-4">
+          <h3 className="text-xs font-semibold mb-3">Integration Points</h3>
+          <div className="space-y-1 text-xs text-muted-foreground font-mono">
+            <p>REST API (OpenAPI 3.0)</p>
+            <p>Webhook notifications</p>
+            <p>SIEM export (JSON, CEF)</p>
+            <p>SOAR playbook triggers</p>
+            <p>Slack / Teams alerts</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

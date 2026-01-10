@@ -1,67 +1,146 @@
-import { Clock, Eye, ArrowUpCircle, Bell, Brain, Cpu, AlertCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { Search, Download, Filter } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface AuditEntry {
   timestamp: string;
+  actor: string;
+  actorType: "system" | "analyst" | "admin";
   action: string;
-  icon: React.ReactNode;
-  type: "system" | "human" | "notification";
+  resource: string;
+  result: "success" | "failure";
+  eventId?: string;
 }
 
 const auditEntries: AuditEntry[] = [
-  { timestamp: "14:32:18", action: "Event detected (EVT-0842)", icon: <AlertCircle className="w-4 h-4" />, type: "system" },
-  { timestamp: "14:32:19", action: "Neural analysis completed", icon: <Cpu className="w-4 h-4" />, type: "system" },
-  { timestamp: "14:32:21", action: "Symbolic reasoning applied", icon: <Brain className="w-4 h-4" />, type: "system" },
-  { timestamp: "14:32:23", action: "Explanation generated", icon: <Brain className="w-4 h-4" />, type: "system" },
-  { timestamp: "14:32:45", action: "Analyst viewed event", icon: <Eye className="w-4 h-4" />, type: "human" },
-  { timestamp: "14:35:12", action: "Analyst escalated to Tier 2", icon: <ArrowUpCircle className="w-4 h-4" />, type: "human" },
-  { timestamp: "14:35:13", action: "Notification sent", icon: <Bell className="w-4 h-4" />, type: "notification" },
+  { 
+    timestamp: "14:35:13.442", 
+    actor: "NSA-X", 
+    actorType: "system",
+    action: "ALERT_SENT", 
+    resource: "notification.slack.channel-security",
+    result: "success",
+    eventId: "EVT-2026-0847"
+  },
+  { 
+    timestamp: "14:35:12.103", 
+    actor: "j.chen", 
+    actorType: "analyst",
+    action: "ESCALATE", 
+    resource: "EVT-2026-0847",
+    result: "success"
+  },
+  { 
+    timestamp: "14:32:45.887", 
+    actor: "j.chen", 
+    actorType: "analyst",
+    action: "VIEW_EVENT", 
+    resource: "EVT-2026-0847",
+    result: "success"
+  },
+  { 
+    timestamp: "14:32:23.009", 
+    actor: "NSA-X", 
+    actorType: "system",
+    action: "EXPLANATION_GENERATED", 
+    resource: "EVT-2026-0847",
+    result: "success"
+  },
+  { 
+    timestamp: "14:32:21.234", 
+    actor: "NSA-X", 
+    actorType: "system",
+    action: "POLICY_EVALUATED", 
+    resource: "rule.47, policy.12",
+    result: "success"
+  },
+  { 
+    timestamp: "14:32:18.442", 
+    actor: "NSA-X", 
+    actorType: "system",
+    action: "EVENT_DETECTED", 
+    resource: "netflow.anomaly.lateral_movement",
+    result: "success",
+    eventId: "EVT-2026-0847"
+  },
 ];
 
-const typeStyles = {
-  system: "border-info/30 bg-info/5",
-  human: "border-success/30 bg-success/5",
-  notification: "border-caution/30 bg-caution/5",
-};
-
-const iconStyles = {
+const actorStyles = {
   system: "text-info",
-  human: "text-success",
-  notification: "text-caution",
+  analyst: "text-success",
+  admin: "text-caution",
 };
 
 export function AuditTrail() {
-  return (
-    <div className="card-surface p-5">
-      <div className="flex items-center gap-2 mb-4">
-        <Clock className="w-5 h-5 text-muted-foreground" />
-        <h3 className="text-sm font-semibold text-foreground">
-          Recent System Actions
-        </h3>
-        <span className="text-xs text-muted-foreground">(Illustrative Timeline)</span>
-      </div>
+  const [filter, setFilter] = useState<string>("");
 
-      <div className="space-y-2">
-        {auditEntries.map((entry, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className={`flex items-center gap-3 p-3 rounded-lg border ${typeStyles[entry.type]}`}
-          >
-            <span className="text-xs font-mono text-muted-foreground w-16">
-              {entry.timestamp}
-            </span>
-            <div className={iconStyles[entry.type]}>
-              {entry.icon}
-            </div>
-            <span className="text-sm text-foreground">
-              {entry.action}
-            </span>
-          </motion.div>
-        ))}
+  return (
+    <div className="card-surface">
+      <div className="p-4 border-b border-border flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-semibold">Audit Log</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Immutable record of all system and user actions
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+            <input 
+              type="text"
+              placeholder="Search..."
+              className="h-8 w-48 pl-8 pr-3 text-xs bg-background border border-border rounded"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            />
+          </div>
+          <Button variant="outline" size="sm" className="h-8 text-xs">
+            <Filter className="w-3.5 h-3.5 mr-1.5" />
+            Filter
+          </Button>
+          <Button variant="outline" size="sm" className="h-8 text-xs">
+            <Download className="w-3.5 h-3.5 mr-1.5" />
+            Export
+          </Button>
+        </div>
       </div>
+      
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th className="w-28">Timestamp</th>
+            <th className="w-24">Actor</th>
+            <th className="w-40">Action</th>
+            <th>Resource</th>
+            <th className="w-20 text-center">Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          {auditEntries.map((entry, i) => (
+            <tr key={i}>
+              <td className="font-mono text-xs">{entry.timestamp}</td>
+              <td>
+                <span className={cn("text-xs font-medium", actorStyles[entry.actorType])}>
+                  {entry.actor}
+                </span>
+              </td>
+              <td className="font-mono text-xs">{entry.action}</td>
+              <td className="font-mono text-xs text-muted-foreground truncate max-w-xs">
+                {entry.resource}
+              </td>
+              <td className="text-center">
+                <span className={cn(
+                  "text-xs px-1.5 py-0.5 rounded",
+                  entry.result === "success" ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+                )}>
+                  {entry.result}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
