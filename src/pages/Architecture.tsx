@@ -1,164 +1,126 @@
-import { useState } from "react";
 import { ArchitectureFlow } from "@/components/architecture/ArchitectureFlow";
-import { ChevronDown, ChevronRight, Check, AlertCircle } from "lucide-react";
 
-interface LayerCard {
+interface LayerDetail {
   id: string;
   name: string;
-  purpose: string;
-  strength: string;
+  implementation: string;
+  latency: string;
+  throughput: string;
   limitation: string;
 }
 
-const layers: LayerCard[] = [
+const layers: LayerDetail[] = [
   {
     id: "neural",
-    name: "Neural Signal Extraction",
-    purpose: "Identifies unusual behavior patterns from network telemetry",
-    strength: "Detects novel threats without pre-defined signatures",
-    limitation: "Cannot explain its own decisions",
+    name: "Anomaly Detection",
+    implementation: "Transformer-based (512-dim embeddings), trained on 18M labeled events",
+    latency: "< 200ms",
+    throughput: "~4.2K events/min",
+    limitation: "Cannot explain its own decisions; requires symbolic layer for interpretability",
   },
   {
     id: "symbolic",
-    name: "Symbolic Reasoning",
-    purpose: "Applies organizational policies and security rules",
-    strength: "Provides interpretable, auditable decision logic",
-    limitation: "Requires neural layer for pattern discovery",
+    name: "Rule Engine",
+    implementation: "Prolog-style inference with 847 active rules, supports temporal reasoning",
+    latency: "< 50ms",
+    throughput: "~12K evaluations/min",
+    limitation: "Requires neural layer for novel pattern detection",
   },
   {
     id: "explain",
-    name: "Explainability Engine",
-    purpose: "Generates human-readable justifications for each alert",
-    strength: "Bridges AI decisions to analyst understanding",
-    limitation: "Depth depends on symbolic rule coverage",
+    name: "Explanation Engine",
+    implementation: "Causal chain reconstruction with counterfactual generation",
+    latency: "< 100ms",
+    throughput: "~6K explanations/min",
+    limitation: "Explanation depth limited by symbolic rule coverage",
   },
   {
     id: "response",
-    name: "Response Orchestration",
-    purpose: "Recommends actions based on threat context and policy",
-    strength: "Integrates with existing security workflows",
-    limitation: "Blocking actions require human approval",
+    name: "Response Orchestrator",
+    implementation: "Workflow engine with playbook integration, SOAR compatible",
+    latency: "< 20ms",
+    throughput: "~8K recommendations/min",
+    limitation: "Cannot execute without human approval for blocking actions",
   },
 ];
 
 export default function Architecture() {
-  const [expandedLayer, setExpandedLayer] = useState<string | null>(null);
-
-  const toggleLayer = (id: string) => {
-    setExpandedLayer(expandedLayer === id ? null : id);
-  };
-
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-xl font-semibold text-foreground mb-2">
-          System Architecture
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          A neuro-symbolic reasoning pipeline that explains its decisions
+    <div className="p-6">
+      <div className="mb-6">
+        <h1 className="mb-1">System Architecture</h1>
+        <p className="text-muted-foreground text-sm">
+          Neuro-symbolic processing pipeline with real-time telemetry
         </p>
       </div>
 
       {/* Architecture Diagram */}
-      <div className="mb-10">
+      <div className="mb-8">
         <ArchitectureFlow />
       </div>
 
-      {/* Layer Details - Expandable Cards */}
-      <div className="mb-8">
-        <h2 className="text-sm font-semibold text-foreground mb-4">
-          Layer Overview
-        </h2>
-        <div className="space-y-2">
-          {layers.map((layer) => (
-            <div
-              key={layer.id}
-              className="rounded-lg border border-border/50 bg-card overflow-hidden transition-all duration-200"
-            >
-              {/* Header - Always visible */}
-              <button
-                onClick={() => toggleLayer(layer.id)}
-                className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/30 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-foreground">
-                    {layer.name}
-                  </span>
-                </div>
-                {expandedLayer === layer.id ? (
-                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                ) : (
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                )}
-              </button>
-
-              {/* Expanded Content */}
-              {expandedLayer === layer.id && (
-                <div className="px-4 pb-4 space-y-3 border-t border-border/30">
-                  <div className="pt-3">
-                    <p className="text-xs text-muted-foreground mb-3">
-                      {layer.purpose}
-                    </p>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex items-start gap-2">
-                        <Check className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" />
-                        <div>
-                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                            Strength
-                          </span>
-                          <p className="text-xs text-foreground">
-                            {layer.strength}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <AlertCircle className="w-3.5 h-3.5 text-amber-500 mt-0.5 shrink-0" />
-                        <div>
-                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                            Limitation
-                          </span>
-                          <p className="text-xs text-foreground">
-                            {layer.limitation}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
+      {/* Layer Details Table */}
+      <div className="card-surface">
+        <div className="p-4 border-b border-border">
+          <h2 className="text-sm font-semibold">Layer Specifications</h2>
         </div>
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th className="w-40">Layer</th>
+              <th>Implementation</th>
+              <th className="w-24">Latency</th>
+              <th className="w-32">Throughput</th>
+              <th>Limitation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {layers.map((layer) => (
+              <tr key={layer.id}>
+                <td className="font-semibold text-foreground">{layer.name}</td>
+                <td className="text-xs text-muted-foreground">{layer.implementation}</td>
+                <td className="font-mono text-xs">{layer.latency}</td>
+                <td className="font-mono text-xs">{layer.throughput}</td>
+                <td className="text-xs text-caution">{layer.limitation}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* Design Principles */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="p-4 rounded-lg bg-muted/20 border border-border/30">
-          <h3 className="text-xs font-semibold text-foreground mb-2">
-            Transparency First
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            Every alert includes a complete reasoning chain that analysts can verify and question.
-          </p>
+      {/* Protocol Support */}
+      <div className="grid grid-cols-3 gap-4 mt-6">
+        <div className="card-surface p-4">
+          <h3 className="text-xs font-semibold mb-3">Input Protocols</h3>
+          <div className="space-y-1 text-xs text-muted-foreground font-mono">
+            <p>Syslog (RFC 5424)</p>
+            <p>SNMP v2c/v3</p>
+            <p>CEF (Common Event Format)</p>
+            <p>LEEF (Log Event Extended Format)</p>
+            <p>NetFlow v9 / IPFIX</p>
+          </div>
         </div>
 
-        <div className="p-4 rounded-lg bg-muted/20 border border-border/30">
-          <h3 className="text-xs font-semibold text-foreground mb-2">
-            Human Authority
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            Blocking and remediation actions are never automated. Analysts retain full control.
-          </p>
+        <div className="card-surface p-4">
+          <h3 className="text-xs font-semibold mb-3">Detection Capabilities</h3>
+          <div className="space-y-1 text-xs text-muted-foreground">
+            <p>Lateral movement detection</p>
+            <p>Privilege escalation patterns</p>
+            <p>Data exfiltration indicators</p>
+            <p>C2 beacon identification</p>
+            <p>Credential abuse detection</p>
+          </div>
         </div>
 
-        <div className="p-4 rounded-lg bg-muted/20 border border-border/30">
-          <h3 className="text-xs font-semibold text-foreground mb-2">
-            Graceful Uncertainty
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            When confidence is low, the system clearly communicates what it doesn't know.
-          </p>
+        <div className="card-surface p-4">
+          <h3 className="text-xs font-semibold mb-3">Integration Points</h3>
+          <div className="space-y-1 text-xs text-muted-foreground font-mono">
+            <p>REST API (OpenAPI 3.0)</p>
+            <p>Webhook notifications</p>
+            <p>SIEM export (JSON, CEF)</p>
+            <p>SOAR playbook triggers</p>
+            <p>Slack / Teams alerts</p>
+          </div>
         </div>
       </div>
     </div>
