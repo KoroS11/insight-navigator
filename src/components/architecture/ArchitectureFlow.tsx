@@ -1,103 +1,160 @@
-const layers = [
-  { id: "input", label: "Data Ingestion", x: 60, y: 50, 
-    stats: "Syslog, SNMP, CEF | ~4.2K events/min" },
-  { id: "neural", label: "Anomaly Detection", x: 240, y: 50, 
-    stats: "512-dim embeddings | <200ms" },
-  { id: "symbolic", label: "Rule Engine", x: 420, y: 50, 
-    stats: "847 active rules | <50ms" },
-  { id: "explain", label: "Explanation", x: 330, y: 150, 
-    stats: "4.2 avg depth | <100ms" },
-  { id: "human", label: "Analyst Queue", x: 330, y: 250, 
-    stats: "3 pending | 2 active" },
+import { Activity, Brain, Scale, MessageSquare, User } from "lucide-react";
+
+interface PipelineStage {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  isHighlighted?: boolean;
+}
+
+interface Connection {
+  from: string;
+  to: string;
+  label: string;
+  type: "primary" | "feedback";
+}
+
+const stages: PipelineStage[] = [
+  {
+    id: "telemetry",
+    title: "Telemetry Ingestion",
+    description: "High-volume security event streams",
+    icon: <Activity className="w-5 h-5" />,
+  },
+  {
+    id: "neural",
+    title: "Neural Signal Extraction",
+    description: "Learned behavioral patterns",
+    icon: <Brain className="w-5 h-5" />,
+  },
+  {
+    id: "symbolic",
+    title: "Symbolic Reasoning",
+    description: "Policy-driven logic evaluation",
+    icon: <Scale className="w-5 h-5" />,
+  },
+  {
+    id: "explain",
+    title: "Explainability",
+    description: "Human-readable justifications",
+    icon: <MessageSquare className="w-5 h-5" />,
+    isHighlighted: true,
+  },
+  {
+    id: "human",
+    title: "Human Decision",
+    description: "Analyst review and action",
+    icon: <User className="w-5 h-5" />,
+  },
 ];
 
-const connections = [
-  { from: "input", to: "neural" },
-  { from: "neural", to: "symbolic" },
-  { from: "neural", to: "explain" },
-  { from: "symbolic", to: "explain" },
-  { from: "explain", to: "human" },
+const connections: Connection[] = [
+  { from: "telemetry", to: "neural", label: "raw signals", type: "primary" },
+  { from: "neural", to: "symbolic", label: "context", type: "primary" },
+  { from: "symbolic", to: "explain", label: "constraints", type: "primary" },
+  { from: "explain", to: "human", label: "justification", type: "primary" },
+  { from: "neural", to: "explain", label: "patterns", type: "feedback" },
 ];
 
 export function ArchitectureFlow() {
-  const getLayerPos = (id: string) => {
-    const layer = layers.find(l => l.id === id);
-    return layer ? { x: layer.x, y: layer.y } : { x: 0, y: 0 };
-  };
-
   return (
-    <div className="relative w-full h-[320px] card-surface overflow-hidden">
-      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 540 320">
-        {/* Subtle Grid */}
-        <defs>
-          <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
-            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="hsl(220 14% 12%)" strokeWidth="0.5" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" />
+    <div className="w-full">
+      {/* Pipeline Container */}
+      <div className="relative bg-background rounded-xl border border-border/50 p-8 overflow-hidden">
+        {/* Subtle background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-muted/5 to-transparent pointer-events-none" />
+        
+        {/* Main horizontal pipeline */}
+        <div className="relative flex items-center justify-between gap-4">
+          {stages.map((stage, index) => (
+            <div key={stage.id} className="flex items-center flex-1">
+              {/* Stage Block */}
+              <div
+                className={`
+                  relative flex-1 p-6 rounded-xl border transition-all duration-300
+                  ${stage.isHighlighted 
+                    ? "bg-primary/5 border-primary/30 shadow-[0_0_20px_rgba(14,165,233,0.08)]" 
+                    : "bg-card border-border/50 hover:border-border"
+                  }
+                `}
+              >
+                {/* Icon */}
+                <div className={`
+                  w-10 h-10 rounded-lg flex items-center justify-center mb-4
+                  ${stage.isHighlighted 
+                    ? "bg-primary/10 text-primary" 
+                    : "bg-muted/50 text-muted-foreground"
+                  }
+                `}>
+                  {stage.icon}
+                </div>
+                
+                {/* Title */}
+                <h3 className={`
+                  text-sm font-semibold mb-1
+                  ${stage.isHighlighted ? "text-primary" : "text-foreground"}
+                `}>
+                  {stage.title}
+                </h3>
+                
+                {/* Description */}
+                <p className="text-xs text-muted-foreground">
+                  {stage.description}
+                </p>
 
-        {/* Connections */}
-        {connections.map((conn, i) => {
-          const from = getLayerPos(conn.from);
-          const to = getLayerPos(conn.to);
-          return (
-            <line
-              key={i}
-              x1={from.x + 60}
-              y1={from.y + 22}
-              x2={to.x + 60}
-              y2={to.y + 22}
-              stroke="hsl(199 70% 50%)"
-              strokeWidth="1"
-              strokeOpacity="0.3"
-              className="flow-line"
-            />
-          );
-        })}
+                {/* Highlighted badge for Explainability */}
+                {stage.isHighlighted && (
+                  <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-primary/20 text-primary text-[10px] font-medium rounded-full border border-primary/30">
+                    Core
+                  </div>
+                )}
+              </div>
 
-        {/* Nodes */}
-        {layers.map((layer) => (
-          <g key={layer.id}>
-            <rect
-              x={layer.x}
-              y={layer.y}
-              width="120"
-              height="44"
-              rx="2"
-              fill="hsl(220 16% 11%)"
-              stroke="hsl(220 14% 18%)"
-              strokeWidth="1"
-            />
-            <text
-              x={layer.x + 60}
-              y={layer.y + 18}
-              textAnchor="middle"
-              fill="hsl(220 10% 88%)"
-              fontSize="11"
-              fontWeight="600"
-            >
-              {layer.label}
-            </text>
-            <text
-              x={layer.x + 60}
-              y={layer.y + 32}
-              textAnchor="middle"
-              fill="hsl(220 10% 50%)"
-              fontSize="8"
-              fontFamily="JetBrains Mono, monospace"
-            >
-              {layer.stats.slice(0, 28)}
-            </text>
-          </g>
-        ))}
-      </svg>
-
-      {/* Legend */}
-      <div className="absolute bottom-3 left-4 flex items-center gap-4 text-xs text-muted-foreground">
-        <div className="flex items-center gap-1.5">
-          <div className="w-4 h-px bg-primary/50" />
-          <span>Data flow</span>
+              {/* Connection Arrow */}
+              {index < stages.length - 1 && (
+                <div className="flex flex-col items-center px-2 min-w-[60px]">
+                  {/* Arrow line */}
+                  <div className="w-full h-px bg-gradient-to-r from-border via-muted-foreground/30 to-border" />
+                  {/* Arrow head */}
+                  <svg width="8" height="6" viewBox="0 0 8 6" className="text-muted-foreground/50 -mt-[3px] ml-auto">
+                    <path d="M4 6L8 0H0L4 6Z" fill="currentColor" />
+                  </svg>
+                  {/* Connection label */}
+                  <span className="text-[10px] text-muted-foreground/70 mt-1 whitespace-nowrap">
+                    {connections.find(c => c.from === stage.id)?.label}
+                  </span>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
+
+        {/* Feedback loop indicator */}
+        <div className="mt-8 pt-6 border-t border-border/30">
+          <div className="flex items-center justify-center gap-8">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <div className="w-8 h-px bg-gradient-to-r from-transparent to-muted-foreground/50" />
+              <span>Primary flow</span>
+            </div>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <div className="w-8 h-px border-t border-dashed border-muted-foreground/50" />
+              <span>Contextual feedback</span>
+            </div>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <div className="w-3 h-3 rounded-full border border-primary/50 bg-primary/10" />
+              <span>Explainability (core differentiation)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Key insight callout */}
+      <div className="mt-6 p-4 rounded-lg bg-muted/30 border border-border/50">
+        <p className="text-sm text-muted-foreground text-center">
+          <span className="text-foreground font-medium">NSA-X assists.</span>
+          {" "}Every recommendation includes its reasoning. Humans make the final decision.
+        </p>
       </div>
     </div>
   );
