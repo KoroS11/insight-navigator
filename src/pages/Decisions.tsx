@@ -37,7 +37,7 @@ export default function Decisions() {
         {/* Left Column */}
         <div className="space-y-6">
           <ConfidenceIndicator {...confidenceData} />
-          <ActionMatrix recommendedAction="escalate" />
+          <ActionMatrix />
         </div>
 
         {/* Right Column */}
