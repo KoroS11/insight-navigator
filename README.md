@@ -1,73 +1,190 @@
-# Welcome to your Lovable project
+# Neuro-Symbolic Security Operations Center (SOC)
 
-## Project info
+A modern, AI-powered Security Operations Center dashboard built with React, TypeScript, and Tailwind CSS. This application provides security analysts with real-time threat detection, explainable AI decisions, and comprehensive governance controls.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🎯 Project Overview
 
-## How can I edit this code?
+This SOC platform combines neural network-based anomaly detection with symbolic rule engines to provide:
 
-There are several ways of editing your application.
+- **Real-time Security Monitoring**: Track security events, threats, and system performance
+- **AI-Powered Decision Support**: Confidence indicators and action recommendations
+- **Explainable AI**: Understand why the system made specific decisions
+- **Governance & Compliance**: Audit trails, autonomy boundaries, and emergency protocols
 
-**Use Lovable**
+## 🛠️ Technology Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+| Category | Technology |
+|----------|------------|
+| **Frontend** | React 18, TypeScript |
+| **Styling** | Tailwind CSS, shadcn/ui |
+| **State Management** | TanStack React Query |
+| **Routing** | React Router v6 |
+| **Backend** | Lovable Cloud (Supabase) |
+| **Animations** | Framer Motion |
+| **Charts** | Recharts |
+| **Icons** | Lucide React |
 
-Changes made via Lovable will be committed automatically to this repo.
+## 📁 Project Structure
 
-**Use your preferred IDE**
+```
+├── public/
+│   ├── favicon.ico
+│   ├── placeholder.svg
+│   └── robots.txt
+├── src/
+│   ├── components/
+│   │   ├── architecture/
+│   │   │   └── ArchitectureFlow.tsx      # System architecture diagram
+│   │   ├── decisions/
+│   │   │   ├── ActionMatrix.tsx          # Decision action recommendations
+│   │   │   ├── AnalystNotes.tsx          # Analyst note-taking component
+│   │   │   └── ConfidenceIndicator.tsx   # AI confidence visualization
+│   │   ├── explainability/
+│   │   │   ├── CounterfactualPanel.tsx   # "What-if" scenario analysis
+│   │   │   ├── EventSummary.tsx          # Event details summary
+│   │   │   └── ExplanationTree.tsx       # Decision tree visualization
+│   │   ├── governance/
+│   │   │   ├── AuditTrail.tsx            # System audit logs
+│   │   │   └── AutonomyBoundary.tsx      # AI autonomy controls
+│   │   ├── layout/
+│   │   │   ├── AppLayout.tsx             # Main application layout
+│   │   │   ├── AppSidebar.tsx            # Navigation sidebar
+│   │   │   └── StatusBar.tsx             # System status indicator
+│   │   ├── shared/
+│   │   │   ├── MetricCard.tsx            # Reusable metric display
+│   │   │   └── StatusBadge.tsx           # Status indicator badge
+│   │   ├── ui/                           # shadcn/ui components
+│   │   └── NavLink.tsx                   # Navigation link component
+│   ├── hooks/
+│   │   ├── use-mobile.tsx                # Mobile detection hook
+│   │   └── use-toast.ts                  # Toast notification hook
+│   ├── integrations/
+│   │   └── supabase/
+│   │       ├── client.ts                 # Supabase client configuration
+│   │       └── types.ts                  # Database type definitions
+│   ├── lib/
+│   │   └── utils.ts                      # Utility functions
+│   ├── pages/
+│   │   ├── Architecture.tsx              # System architecture page
+│   │   ├── Decisions.tsx                 # Analyst decision interface
+│   │   ├── Explainability.tsx            # AI explanation dashboard
+│   │   ├── Governance.tsx                # Governance & compliance
+│   │   ├── Index.tsx                     # Main dashboard
+│   │   └── NotFound.tsx                  # 404 error page
+│   ├── App.tsx                           # Root application component
+│   ├── App.css                           # Global styles
+│   ├── index.css                         # Tailwind CSS imports
+│   └── main.tsx                          # Application entry point
+├── supabase/
+│   └── config.toml                       # Supabase configuration
+├── .env                                  # Environment variables
+├── tailwind.config.ts                    # Tailwind configuration
+├── vite.config.ts                        # Vite build configuration
+└── package.json                          # Dependencies and scripts
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prerequisites
 
-Follow these steps:
+- Node.js 18+ 
+- npm or bun
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+### Installation
+
+```bash
+# Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
+# Navigate to project directory
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Available Scripts
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
 
-**Use GitHub Codespaces**
+## 📱 Pages
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Dashboard (`/`)
+Main security operations dashboard displaying:
+- Key performance metrics
+- Recent security events
+- Active investigations
+- System performance summary
 
-## What technologies are used for this project?
+### Decisions (`/decisions`)
+Analyst decision support interface with:
+- AI confidence indicators
+- Action recommendation matrix
+- Analyst notes and observations
+- Relevant playbook references
 
-This project is built with:
+### Explainability (`/explainability`)
+AI decision explanation center featuring:
+- Event summaries and timelines
+- Explanation trees for decision logic
+- Counterfactual "what-if" analysis
+- Evidence strength indicators
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Governance (`/governance`)
+Compliance and control management:
+- Autonomy boundary controls
+- Emergency override protocols
+- Complete audit trail
+- Security policy management
 
-## How can I deploy this project?
+### Architecture (`/architecture`)
+System architecture documentation:
+- Neuro-symbolic processing pipeline
+- Layer specifications and performance
+- Integration points and protocols
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## 🔐 Backend Integration
 
-## Can I connect a custom domain to my Lovable project?
+This project uses **Lovable Cloud** for backend services:
+- **Database**: PostgreSQL with Row Level Security
+- **Authentication**: Built-in user management
+- **Storage**: Secure file handling
+- **Edge Functions**: Serverless backend logic
 
-Yes, you can!
+## 📝 Changelog
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+All notable changes to this project will be documented in this section.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### [2025-01-12]
+
+#### Added
+- ✅ Enabled Lovable Cloud backend integration
+- ✅ Added comprehensive README documentation
+- ✅ Documented complete project structure
+
+#### Fixed
+- 🐛 Fixed TypeScript error in Decisions.tsx (removed unused `recommendedAction` prop)
+
+---
+
+## 📄 License
+
+This project is private and proprietary.
+
+## 🤝 Contributing
+
+1. Create a feature branch from `main`
+2. Make your changes
+3. Submit a pull request for review
+
+---
+
+*Built with [Lovable](https://lovable.dev) - The AI-powered web application builder*
