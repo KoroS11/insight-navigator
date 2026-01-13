@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirecting…</title>
+    <script type="text/javascript">
+      // GitHub Pages SPA redirect.
+      // This redirects all 404s to index.html with the path encoded in the querystring.
+      // index.html then decodes and restores the original path.
+      (function () {
+        var segmentCount = 1; // 1 for "<user>.github.io/<repo>/..."
+        var l = window.location;
+        var origin = l.protocol + "//" + l.host;
+        var base = l.pathname.split("/").slice(0, 1 + segmentCount).join("/");
+        var path = l.pathname.split("/").slice(1 + segmentCount).join("/");
+        var search = l.search ? l.search.replace(/&/g, "~and~") : "";
+        l.replace(origin + base + "/?\/" + path + search + l.hash);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
