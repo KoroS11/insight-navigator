@@ -486,4 +486,31 @@ This project is private and proprietary.
 
 ---
 
+## 13. Deployment (GitHub Pages)
+
+This repo is configured to deploy the frontend to **GitHub Pages** using **GitHub Actions**.
+
+### How It Works
+
+- The workflow file is: `.github/workflows/deploy.yml`
+- On every push to `main`, GitHub Actions runs `npm ci` → `npm run build` and deploys the `dist/` folder
+- Vite is configured with a Pages base path in `vite.config.ts` (`base: "/insight-navigator/"`)
+
+### One-Time Setup (in GitHub UI)
+
+1. Open your repo settings: **Settings → Pages**
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**
+3. Push to `main` (or run the workflow manually from the Actions tab)
+
+### Deployment URL
+
+After a successful run, the site will be available at:
+
+`https://<your-username>.github.io/insight-navigator/`
+
+### Troubleshooting
+
+- If the site loads but assets 404, verify the `base` path in `vite.config.ts` matches the repo name.
+- If deployments don’t start, confirm Pages **Source** is set to **GitHub Actions**.
+
 *This is a research prototype developed to explore neuro-symbolic approaches to security operations. It is not intended for production use without significant additional development.*
