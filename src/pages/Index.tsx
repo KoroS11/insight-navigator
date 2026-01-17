@@ -1,51 +1,52 @@
 import { MetricCard } from "@/components/shared/MetricCard";
 import { StatusBadge } from "@/components/shared/StatusBadge";
-import { Link } from "react-router-dom";
-import { ArrowRight, Clock, AlertTriangle } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight, Clock, AlertTriangle, Loader2 } from "lucide-react";
+import { useEvents } from "@/hooks/use-events";
+import { useAlerts, usePendingAlertCount } from "@/hooks/use-alerts";
+import { useHealth } from "@/hooks/use-system";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const recentEvents = [
-  {
-    id: "EVT-2026-01-10-0847-LM",
-    source: "10.42.17.89",
-    destination: "172.16.5.12:443",
-    type: "Lateral Movement",
-    severity: "high",
-    time: "14:35:42.103",
-    status: "pending" as const,
-  },
-  {
-    id: "EVT-2026-01-10-0846-PE",
-    source: "10.42.18.204",
-    destination: "192.168.1.1:22",
-    type: "Privilege Escalation",
-    severity: "medium",
-    time: "14:32:18.887",
-    status: "pending" as const,
-  },
-  {
-    id: "EVT-2026-01-10-0845-DE",
-    source: "10.42.12.55",
-    destination: "185.220.101.42:8443",
-    type: "Data Exfiltration",
-    severity: "high",
-    time: "14:28:03.442",
-    status: "active" as const,
-  },
-];
-
+// Fallback for investigations (not yet an API endpoint)
 const activeInvestigations = [
   { id: "INV-2026-0142", analyst: "j.chen", events: 3, started: "12:45" },
   { id: "INV-2026-0141", analyst: "m.rodriguez", events: 7, started: "11:20" },
 ];
 
+function formatTime(timestamp: string): string {
+  return new Date(timestamp).toLocaleTimeString('en-US', { 
+    hour12: false, 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit' 
+  });
+}
+
+function getEventSeverity(riskScore: number): 'high' | 'medium' | 'low' {
+  if (riskScore >= 70) return 'high';
+  if (riskScore >= 40) return 'medium';
+  return 'low';
+}
+
 export default function Index() {
+  const navigate = useNavigate();
+  
+  // Fetch data from API
+  const { data: eventsData, isLoading: eventsLoading } = useEvents({ limit: 10 });
+  const { data: alertsData, isLoading: alertsLoading } = useAlerts({ limit: 10 });
+  const { data: pendingCount } = usePendingAlertCount();
+  const { data: health } = useHealth();
+
+  // Derive metrics
+  const eventsProcessed = health?.metrics?.events_processed_24h ?? '-';
+  const pendingReview = pendingCount ?? 0;
   return (
     <div className="p-6">
       {/* Metrics Row */}
       <div className="grid grid-cols-4 gap-4 mb-6">
         <MetricCard
           label="Events Processed (24h)"
-          value="1,847"
+          value={typeof eventsProcessed === 'number' ? eventsProcessed.toLocaleString() : eventsProcessed}
           subValue="events"
           trend={{ direction: "up", value: "12%", label: "vs yesterday" }}
         />
@@ -57,8 +58,8 @@ export default function Index() {
         />
         <MetricCard
           label="Pending Review"
-          value="3"
-          subValue="events"
+          value={String(pendingReview)}
+          subValue="alerts"
         />
         <MetricCard
           label="Active Investigations"
@@ -69,56 +70,82 @@ export default function Index() {
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-3 gap-6">
-        {/* Recent Events - 2/3 width */}
+        {/* Recent Alerts - 2/3 width */}
         <div className="col-span-2 card-surface">
           <div className="flex items-center justify-between p-4 border-b border-border">
-            <h2 className="text-sm font-semibold">Recent Events</h2>
-            <Link 
-              to="/explainability" 
-              className="flex items-center gap-1 text-xs text-primary hover:underline"
-            >
-              View all <ArrowRight className="w-3 h-3" />
-            </Link>
+            <h2 className="text-sm font-semibold">Recent Alerts</h2>
+            <span className="text-xs text-muted-foreground">
+              {alertsLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : `${alertsData?.total ?? 0} total`}
+            </span>
           </div>
           
           <table className="data-table">
             <thead>
               <tr>
+                <th>Alert ID</th>
                 <th>Event ID</th>
-                <th>Source</th>
-                <th>Destination</th>
-                <th>Type</th>
+                <th>Classification</th>
+                <th>Risk</th>
                 <th>Time</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {recentEvents.map((event) => (
-                <tr key={event.id}>
-                  <td>
-                    <Link 
-                      to="/explainability" 
-                      className="font-mono text-xs text-primary hover:underline"
-                    >
-                      {event.id}
-                    </Link>
-                  </td>
-                  <td className="font-mono text-xs">{event.source}</td>
-                  <td className="font-mono text-xs">{event.destination}</td>
-                  <td>
-                    <div className="flex items-center gap-1.5">
-                      {event.severity === "high" && (
-                        <AlertTriangle className="w-3 h-3 text-caution" />
-                      )}
-                      <span className="text-xs">{event.type}</span>
-                    </div>
-                  </td>
-                  <td className="font-mono text-xs text-muted-foreground">{event.time}</td>
-                  <td>
-                    <StatusBadge status={event.status} label={event.status === "pending" ? "Pending" : "In Progress"} />
+              {alertsLoading ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin mx-auto" />
                   </td>
                 </tr>
-              ))}
+              ) : alertsData?.alerts?.length ? (
+                alertsData.alerts.map((alert) => (
+                  <tr 
+                    key={alert.id} 
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => navigate(`/alerts/${alert.id}`)}
+                  >
+                    <td>
+                      <span className="font-mono text-xs text-primary">
+                        {alert.id.slice(0, 8)}...
+                      </span>
+                    </td>
+                    <td className="font-mono text-xs">
+                      {alert.event_id ? `${alert.event_id.slice(0, 8)}...` : 'N/A'}
+                    </td>
+                    <td>
+                      <div className="flex items-center gap-1.5">
+                        {alert.classification === "HIGH" && (
+                          <AlertTriangle className="w-3 h-3 text-caution" />
+                        )}
+                        <span className="text-xs">{alert.classification}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={`font-mono text-xs ${
+                        alert.composite_risk_score >= 70 ? 'text-destructive' : 
+                        alert.composite_risk_score >= 40 ? 'text-caution' : ''
+                      }`}>
+                        {alert.composite_risk_score}
+                      </span>
+                    </td>
+                    <td className="font-mono text-xs text-muted-foreground">
+                      {formatTime(alert.created_at)}
+                    </td>
+                    <td>
+                      <StatusBadge 
+                        status={alert.status === 'PENDING' ? 'pending' : 'active'} 
+                        label={alert.status} 
+                      />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="text-center py-8 text-muted-foreground">
+                    No alerts found
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

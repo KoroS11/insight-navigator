@@ -15,9 +15,7 @@ import { Button } from "@/components/ui/button";
 
 const navItems = [
   { title: "Overview", url: "/", icon: LayoutGrid, badge: null },
-  { title: "Active Events", url: "/explainability", icon: FileSearch, badge: 3 },
   { title: "Architecture", url: "/architecture", icon: Network, badge: null },
-  { title: "Decisions", url: "/decisions", icon: ClipboardCheck, badge: 1 },
   { title: "Governance", url: "/governance", icon: Lock, badge: null },
 ];
 

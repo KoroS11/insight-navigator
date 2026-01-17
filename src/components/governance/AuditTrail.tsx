@@ -1,9 +1,11 @@
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { Search, Download, Filter } from "lucide-react";
+import { Search, Download, Filter, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuditLog } from "@/hooks/use-audit";
 
 interface AuditEntry {
+  id: string;
   timestamp: string;
   actor: string;
   actorType: "system" | "analyst" | "admin";
@@ -13,67 +15,58 @@ interface AuditEntry {
   eventId?: string;
 }
 
-const auditEntries: AuditEntry[] = [
-  { 
-    timestamp: "14:35:13.442", 
-    actor: "NSA-X", 
-    actorType: "system",
-    action: "ALERT_SENT", 
-    resource: "notification.slack.channel-security",
-    result: "success",
-    eventId: "EVT-2026-0847"
-  },
-  { 
-    timestamp: "14:35:12.103", 
-    actor: "j.chen", 
-    actorType: "analyst",
-    action: "ESCALATE", 
-    resource: "EVT-2026-0847",
-    result: "success"
-  },
-  { 
-    timestamp: "14:32:45.887", 
-    actor: "j.chen", 
-    actorType: "analyst",
-    action: "VIEW_EVENT", 
-    resource: "EVT-2026-0847",
-    result: "success"
-  },
-  { 
-    timestamp: "14:32:23.009", 
-    actor: "NSA-X", 
-    actorType: "system",
-    action: "EXPLANATION_GENERATED", 
-    resource: "EVT-2026-0847",
-    result: "success"
-  },
-  { 
-    timestamp: "14:32:21.234", 
-    actor: "NSA-X", 
-    actorType: "system",
-    action: "POLICY_EVALUATED", 
-    resource: "rule.47, policy.12",
-    result: "success"
-  },
-  { 
-    timestamp: "14:32:18.442", 
-    actor: "NSA-X", 
-    actorType: "system",
-    action: "EVENT_DETECTED", 
-    resource: "netflow.anomaly.lateral_movement",
-    result: "success",
-    eventId: "EVT-2026-0847"
-  },
-];
-
 const actorStyles = {
   system: "text-info",
   analyst: "text-success",
   admin: "text-caution",
 };
 
+function getActorType(actor: string): "system" | "analyst" | "admin" {
+  if (actor === "NSA-X" || actor === "system") return "system";
+  if (actor === "admin" || actor.toLowerCase().includes("admin")) return "admin";
+  return "analyst";
+}
+
+function formatTimestamp(ts: string): string {
+  const date = new Date(ts);
+  const dateStr = date.toLocaleDateString('en-US', { 
+    month: '2-digit', 
+    day: '2-digit',
+    year: '2-digit'
+  });
+  const timeStr = date.toLocaleTimeString('en-US', { 
+    hour12: false, 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit' 
+  });
+  return `${dateStr} ${timeStr}`;
+}
+
 export function AuditTrail() {
   const [filter, setFilter] = useState<string>("");
+  const { data: auditData, isLoading, error } = useAuditLog({ limit: 50 });
+
+  // Transform API data to component format
+  const auditEntries: AuditEntry[] = auditData?.entries?.map(entry => ({
+    id: entry.id,
+    timestamp: formatTimestamp(entry.timestamp),
+    actor: entry.actor,
+    actorType: getActorType(entry.actor),
+    action: entry.action,
+    resource: entry.resource_type ? `${entry.resource_type}${entry.resource_id ? '.' + entry.resource_id : ''}` : entry.action,
+    result: entry.result === 'success' ? 'success' : 'failure',
+    eventId: entry.resource_type === 'event' ? entry.resource_id || undefined : undefined,
+  })) || [];
+
+  // Filter entries by search term
+  const filteredEntries = filter 
+    ? auditEntries.filter(e => 
+        e.action.toLowerCase().includes(filter.toLowerCase()) ||
+        e.actor.toLowerCase().includes(filter.toLowerCase()) ||
+        e.resource.toLowerCase().includes(filter.toLowerCase())
+      )
+    : auditEntries;
 
   return (
     <div className="card-surface">
@@ -82,6 +75,7 @@ export function AuditTrail() {
           <h3 className="text-sm font-semibold">Audit Log</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Immutable record of all system and user actions
+            {auditData?.total !== undefined && ` (${auditData.total} entries)`}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -117,28 +111,48 @@ export function AuditTrail() {
           </tr>
         </thead>
         <tbody>
-          {auditEntries.map((entry, i) => (
-            <tr key={i}>
-              <td className="font-mono text-xs">{entry.timestamp}</td>
-              <td>
-                <span className={cn("text-xs font-medium", actorStyles[entry.actorType])}>
-                  {entry.actor}
-                </span>
-              </td>
-              <td className="font-mono text-xs">{entry.action}</td>
-              <td className="font-mono text-xs text-muted-foreground truncate max-w-xs">
-                {entry.resource}
-              </td>
-              <td className="text-center">
-                <span className={cn(
-                  "text-xs px-1.5 py-0.5 rounded",
-                  entry.result === "success" ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
-                )}>
-                  {entry.result}
-                </span>
+          {isLoading ? (
+            <tr>
+              <td colSpan={5} className="text-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin mx-auto" />
               </td>
             </tr>
-          ))}
+          ) : error ? (
+            <tr>
+              <td colSpan={5} className="text-center py-8 text-destructive">
+                Failed to load audit log
+              </td>
+            </tr>
+          ) : filteredEntries.length === 0 ? (
+            <tr>
+              <td colSpan={5} className="text-center py-8 text-muted-foreground">
+                No audit entries found
+              </td>
+            </tr>
+          ) : (
+            filteredEntries.map((entry) => (
+              <tr key={entry.id}>
+                <td className="font-mono text-xs">{entry.timestamp}</td>
+                <td>
+                  <span className={cn("text-xs font-medium", actorStyles[entry.actorType])}>
+                    {entry.actor}
+                  </span>
+                </td>
+                <td className="font-mono text-xs">{entry.action}</td>
+                <td className="font-mono text-xs text-muted-foreground truncate max-w-xs">
+                  {entry.resource}
+                </td>
+                <td className="text-center">
+                  <span className={cn(
+                    "text-xs px-1.5 py-0.5 rounded",
+                    entry.result === "success" ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+                  )}>
+                    {entry.result}
+                  </span>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
