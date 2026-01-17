@@ -1,6 +1,49 @@
 # NSA-X: Neuro-Symbolic Autonomous Security Analyst
 
-> **⚠️ DISCLAIMER**: This is a frontend research prototype. No backend, ML models, or real-time processing are implemented. The UI simulates workflows but does not perform real security operations.
+> **⚠️ DISCLAIMER**: This is a research prototype with a working **frontend UI** and **backend API**. However, **ML/Neural Network models are NOT implemented** - the system uses symbolic rule-based processing only. Real-time ML anomaly detection is planned for future development.
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Node.js 18+** - [Download](https://nodejs.org)
+- **Python 3.11+** - [Download](https://python.org)
+- **Git** - [Download](https://git-scm.com)
+
+### One-Command Setup
+
+**Windows (PowerShell):**
+```powershell
+git clone https://github.com/KoroS11/insight-navigator.git
+cd insight-navigator
+.\setup.ps1
+```
+
+**Linux/macOS:**
+```bash
+git clone https://github.com/KoroS11/insight-navigator.git
+cd insight-navigator
+chmod +x setup.sh && ./setup.sh
+```
+
+### Running the Application
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+# Windows: .\venv\Scripts\Activate.ps1
+# Linux/macOS: source venv/bin/activate
+uvicorn app.main:app --reload
+```
+
+**Terminal 2 - Frontend:**
+```bash
+npm run dev
+```
+
+Open http://localhost:8080 and login with `admin` / `admin123`
 
 ---
 
@@ -29,34 +72,32 @@ The following components exist today:
 
 | Component | Status | Description |
 |-----------|--------|-------------|
-| **Frontend UI Prototype** | ✅ Complete | React + TypeScript + Tailwind CSS application |
-| **Design System** | ✅ Complete | Dark theme, SOC-style layout, consistent component library |
-| **Dashboard Layout** | ✅ Complete | Main navigation, sidebar, status indicators |
-| **Architecture Visualization** | ✅ Complete | Conceptual diagram of neuro-symbolic pipeline |
-| **Mock Security Events** | ✅ Complete | Realistic event data with proper identifiers |
-| **Analyst Decision Interface** | ✅ Complete | Confidence indicators, action matrix, notes panel |
-| **Explainability UI** | ✅ Complete | Event summary, explanation tree, counterfactual panel |
-| **Governance Interface** | ✅ Complete | Audit trail, autonomy boundary controls |
-| **Playbook Reference** | ✅ Complete | Static playbook listing for analyst guidance |
+| **Frontend UI** | ✅ Complete | React + TypeScript + Tailwind CSS + shadcn/ui |
+| **Backend API** | ✅ Complete | FastAPI + SQLAlchemy Async + JWT Auth |
+| **Database** | ✅ Complete | SQLite (dev) / PostgreSQL (prod) |
+| **Event Pipeline** | ✅ Complete | 7-layer processing pipeline (rule-based, no ML) |
+| **Symbolic Reasoning** | ✅ Complete | Rule-based threat detection |
+| **Explainability Engine** | ✅ Complete | Decision tree + counterfactuals |
+| **Audit System** | ✅ Complete | Immutable audit trail |
+| **Authentication** | ✅ Complete | JWT + OAuth2 password flow |
+| **Test Coverage** | ✅ 87% | 192 tests passing |
 
-### Technical Stack (Frontend Only)
+### Technical Stack
 
-| Category | Technology |
-|----------|------------|
-| Framework | React 18, TypeScript |
-| Styling | Tailwind CSS, shadcn/ui |
-| State Management | TanStack React Query |
-| Routing | React Router v6 |
-| Animations | Framer Motion |
-| Charts | Recharts |
-| Icons | Lucide React |
+| Layer | Technology |
+|-------|------------|
+| Frontend | React 18, TypeScript, TanStack Query, Tailwind CSS, shadcn/ui |
+| Backend | FastAPI, Python 3.11+, Pydantic v2 |
+| Database | SQLAlchemy 2.0 Async, SQLite/PostgreSQL |
+| Auth | python-jose (JWT), passlib (bcrypt) |
+| Testing | pytest, pytest-asyncio, 87% coverage |
 
 ### Important Clarifications
 
-- **All data is static/mocked** — No live event processing
-- **No backend connectivity** — Supabase client exists but no tables or functions
-- **No persistence** — Analyst actions and notes are not saved
-- **No authentication** — No user sessions or role-based access
+- **Frontend and Backend are fully connected** — Real API calls, not mocked
+- **Data is persisted** — Events, alerts, decisions stored in database
+- **Authentication works** — JWT-based login with admin/admin123
+- **ML/Neural Networks NOT implemented** — Anomaly detection is rule-based only
 
 ---
 
@@ -66,31 +107,45 @@ This section is critical for setting accurate expectations.
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| Backend API | ❌ Not implemented | No server-side logic exists |
-| Event Ingestion | ❌ Not implemented | No ability to receive security events |
-| Data Normalization | ❌ Not implemented | No CEF/STIX/OCSF parsing |
-| ML Detection Models | ❌ Not implemented | No anomaly detection algorithms |
-| Symbolic Reasoning Engine | ❌ Not implemented | No rule engine or policy DSL |
-| Explainability Computation | ❌ Not implemented | Explanations are hardcoded, not computed |
-| Counterfactual Analysis | ❌ Not implemented | "What-if" scenarios are static |
-| Database | ❌ Not implemented | No schema, no persistence |
-| Authentication | ❌ Not implemented | No login, no RBAC |
-| Audit Logging | ❌ Not implemented | Audit trail is mock data |
-| SIEM Integration | ❌ Not implemented | No Splunk/Sentinel/Elastic connectors |
-| SOAR Integration | ❌ Not implemented | No Phantom/XSOAR/Tines integration |
-| Ticketing Integration | ❌ Not implemented | No Jira/ServiceNow connectivity |
-| Alert Correlation | ❌ Not implemented | No event grouping or chaining |
-| Threat Intelligence | ❌ Not implemented | No IOC enrichment |
+| **ML Detection Models** | ❌ Not implemented | No neural network anomaly detection |
+| **Behavioral Baseline** | ❌ Not implemented | No learned user/entity behavior profiles |
+| **Sequence Analysis** | ❌ Not implemented | No LSTM/Transformer for event sequences |
+| **Real Anomaly Scoring** | ❌ Not implemented | Scores are rule-based, not ML-generated |
+| **Data Normalization** | ❌ Not implemented | No CEF/STIX/OCSF parsing |
+| **SIEM Integration** | ❌ Not implemented | No Splunk/Sentinel/Elastic connectors |
+| **SOAR Integration** | ❌ Not implemented | No Phantom/XSOAR/Tines integration |
+| **Ticketing Integration** | ❌ Not implemented | No Jira/ServiceNow connectivity |
+| **Alert Correlation** | ❌ Not implemented | No event grouping or chaining |
+| **Threat Intelligence** | ❌ Not implemented | No IOC enrichment |
 
 ### What the UI Shows vs. What Actually Happens
 
 | UI Element | Visual State | Actual Behavior |
 |------------|--------------|-----------------|
-| Confidence Score | Shows 87% | Hardcoded value |
-| Event Timeline | Shows 4 events | Static array |
-| Explanation Tree | Shows decision path | Mock data structure |
-| Audit Trail | Shows log entries | Not persisted |
-| Analyst Notes | Accepts input | Not saved anywhere |
+| Confidence Score | Shows percentage | Calculated from rules, not ML |
+| Event Timeline | Shows events | Real events from database |
+| Explanation Tree | Shows decision path | Generated from symbolic reasoning |
+| Audit Trail | Shows log entries | Persisted to database |
+| Analyst Notes | Accepts input | Saved to database |
+
+---
+
+##  Additional Implementations (Planned / To Be Done)
+
+The following components are designed and scoped but pending full implementation or integration.
+
+| Component | Planned Scope |
+|-----------|---------------|
+| **Neural Detection Layer** | Behavioral baseline, sequence analysis, anomaly scoring with ML models |
+| **Frontend UI Prototype** | Full SOC-style React UI with TypeScript & Tailwind CSS |
+| **Design System** | Dark theme, SOC-style layout, consistent component library |
+| **Dashboard Layout** | Main navigation, sidebar, real-time status indicators |
+| **Architecture Visualization** | Conceptual and interactive neuro-symbolic pipeline diagrams |
+| **Mock Security Events** | Realistic synthetic event generation with proper identifiers |
+| **Analyst Decision Interface** | Confidence indicators, action matrix, analyst notes panel |
+| **Explainability UI** | Event summaries, explanation trees, counterfactual visualization |
+| **Governance Interface** | Audit trail viewer, autonomy boundary controls |
+| **Playbook Reference** | Static and dynamic playbook listing for analyst guidance |
 
 ---
 
@@ -420,10 +475,10 @@ A realistic phased approach to reach production readiness.
 
 ```bash
 # Clone the repository
-git clone <YOUR_GIT_URL>
+git clone https://github.com/KoroS11/insight-navigator.git
 
 # Navigate to project directory
-cd <YOUR_PROJECT_NAME>
+cd insight-navigator
 
 # Install dependencies
 npm install
@@ -474,7 +529,7 @@ All notable changes to this project are documented here.
 
 ## 11. License
 
-This project is private and proprietary.
+License not yet specified. All rights reserved.
 
 ---
 
@@ -485,32 +540,5 @@ This project is private and proprietary.
 3. Submit a pull request for review
 
 ---
-
-## 13. Deployment (GitHub Pages)
-
-This repo is configured to deploy the frontend to **GitHub Pages** using **GitHub Actions**.
-
-### How It Works
-
-- The workflow file is: `.github/workflows/deploy.yml`
-- On every push to `main`, GitHub Actions runs `npm ci` → `npm run build` and deploys the `dist/` folder
-- Vite is configured with a Pages base path in `vite.config.ts` (`base: "/insight-navigator/"`)
-
-### One-Time Setup (in GitHub UI)
-
-1. Open your repo settings: **Settings → Pages**
-2. Under **Build and deployment**, set **Source** to **GitHub Actions**
-3. Push to `main` (or run the workflow manually from the Actions tab)
-
-### Deployment URL
-
-After a successful run, the site will be available at:
-
-`https://<your-username>.github.io/insight-navigator/`
-
-### Troubleshooting
-
-- If the site loads but assets 404, verify the `base` path in `vite.config.ts` matches the repo name.
-- If deployments don’t start, confirm Pages **Source** is set to **GitHub Actions**.
 
 *This is a research prototype developed to explore neuro-symbolic approaches to security operations. It is not intended for production use without significant additional development.*
