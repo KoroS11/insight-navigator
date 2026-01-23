@@ -1,4 +1,4 @@
-# NSA-X: Neuro-Symbolic Autonomous Security Analyst
+# NSA-X: Neuro-Symbolic Autonomous Security Analyst (Experimental Phase)
 
 > ** DISCLAIMER**: This is a research prototype with a working **frontend UI** and **backend API**. However, **ML/Neural Network models are NOT implemented** - the system uses symbolic rule-based processing only. Real-time ML anomaly detection is planned for future development.
 
