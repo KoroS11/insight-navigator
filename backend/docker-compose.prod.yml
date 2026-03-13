@@ -1,0 +1,29 @@
+# NSA-X Docker Compose - Production Configuration
+# Use with: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --scale api=2
+#
+# SECURITY: All credentials MUST be provided via environment variables or secrets.
+# Set the following in your production .env file or use Docker secrets:
+#   - POSTGRES_PASSWORD (required)
+#   - JWT_SECRET_KEY (required, min 32 chars)
+#   - REDIS_PASSWORD (required)
+#   - DATABASE_URL (if different from default)
+
+services:
+  api:
+    restart: always
+    environment:
+      ENVIRONMENT: production
+      DEBUG: "false"
+      # Required secrets - must be set via .env or Docker secrets
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?JWT_SECRET_KEY is required for production}
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required for production}
+      REDIS_URL: ${REDIS_URL:?REDIS_URL is required for production}
+
+  db:
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for production}
+
+  redis:
+    restart: always
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required for production}

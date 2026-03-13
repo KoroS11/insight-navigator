@@ -257,6 +257,7 @@ export type DecisionAction = 'ESCALATE' | 'DISMISS' | 'MARK_SAFE' | 'WATCH';
 export interface DecisionRequest {
   action: DecisionAction;
   justification: string;
+  confidence?: number;
   follow_up_required?: boolean;
   follow_up_hours?: number;
 }
@@ -267,6 +268,7 @@ export interface DecisionResponse {
   analyst_id: string;
   action: DecisionAction;
   justification: string;
+  confidence: number | null;
   follow_up_required: boolean;
   follow_up_deadline: string | null;
   decision_timestamp: string;
